@@ -1,0 +1,5 @@
+lemur_database_name: lemur
+lemur_database_user: username
+lemur_database_password: password
+# Note: currently only mysql/mariadb is implemented in this playbook
+lemur_database_software: mysql

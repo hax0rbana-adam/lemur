@@ -1,0 +1,10 @@
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Enable and start uwsgi-lemur
+  service:
+    name: uwsgi-lemur
+    enabled: true
+    state: restarted

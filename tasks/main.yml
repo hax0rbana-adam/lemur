@@ -1,0 +1,120 @@
+# This role is expected to run as root so it can install system-wide packages
+- name: Install dependencies that is available from apt repos
+  ansible.builtin.package:
+    name:
+      - git
+      - default-libmysqlclient-dev
+      - pkg-config
+      - npm
+      - python3-pip
+      - python3-docutils
+      - python3-levenshtein
+      - python3-setuptools
+      - mariadb-server
+      - python3-virtualenv
+      - python3-venv
+      - nginx
+      - python3-django-uwsgi
+      - python3-pymysql
+
+- name: Checking to see if we already have a checkout of the lemur repo
+  ansible.builtin.stat:
+    path: /var/www/btp-lemur
+  register: lemur_repo
+
+- name: Accepting different permissions on the existing btp-lemur checkout
+  ansible.builtin.shell:
+    cmd: git config --global --add safe.directory '/var/www/btp-lemur'
+  when: lemur_repo.stat.exists
+
+- name: Making sure we have the latest version of the Lemur code
+  ansible.builtin.git:
+    # clone the repo if it doesn't exist, otherwise update the existing repo
+    clone: "{{not lemur_repo.stat.exists}}"
+    dest: "/var/www/btp-lemur"
+    force: true
+    repo: https://github.com/hax0rbana-adam/btp-lemur.git
+
+- name: Installing yarn via npm
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: npm install --global yarn
+
+- name: Getting yarn packages and dependencies
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: yarn
+
+- name: Using yarn to install webpack
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: yarn global add webpack
+
+- name: Running webpack in the lemur repo
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: ./node_modules/webpack/bin/webpack.js
+
+- name: Set up the Python virtual environment
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: "python3 -m venv . && . bin/activate && pip install -r requirements.txt"
+
+- name: Creating the database for Lemur
+  community.mysql.mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{lemur_database_name}}"
+
+- name: Creating the database user and setting their permissions
+  community.mysql.mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{lemur_database_user}}"
+    password: "{{lemur_database_password}}"
+    priv: "lemur.*:ALL"
+    column_case_sensitive: true
+
+- name: Create a random password to use as the SECRET_KEY value
+  ansible.builtin.set_fact:
+    lemur_secret_key: "{{ lookup('ansible.builtin.password', '/dev/null', length=32) }}"
+  when: lemur_secret_key is not defined
+
+- name: Configuring Lemur's secrets
+  ansible.builtin.template:
+    src: templates/settings_secret.py.j2
+    dest: /var/www/btp-lemur/LemurAptana/settings_secret.py
+
+- name: Configuring Lemur's acceptable hostnames
+  ansible.builtin.lineinfile:
+    path: /var/www/btp-lemur/LemurAptana/settings.py
+    line: ALLOWED_HOSTS = ['{{inventory_hostname}}']
+    regexp: 'ALLOWED_HOSTS.*'
+
+- name: Setting up tables in the database
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: ". bin/activate && python3 manage.py migrate"
+
+- name: Collecting all the static files that will be served
+  ansible.builtin.shell:
+    chdir: "/var/www/btp-lemur"
+    cmd: ". bin/activate && python3 manage.py collectstatic --no-input"
+
+- name: Setting ownership of btp-lemur directory
+  ansible.builtin.file:
+    path: "/var/www/btp-lemur"
+    owner: "www-data" 
+    group: "www-data" 
+
+- name: Configuring Nginx
+  ansible.builtin.template:
+    src: templates/nginx_default.j2
+    dest: /etc/nginx/sites-available/default
+  notify:
+    - Reload nginx
+
+- name: Deploying uWSGI service to run Lemur
+  ansible.builtin.template:
+    src: templates/uwsgi-lemur.service.j2
+    dest: /etc/systemd/system/uwsgi-lemur.service
+  notify:
+    - Enable and start uwsgi-lemur
