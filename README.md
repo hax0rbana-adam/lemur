@@ -10,6 +10,19 @@ run this role. The collection can be installed with:
 ansible-galaxy collection install community.mysql
 ```
 
+After applying this role, if information to create an administrator account was
+not provided, you will need to set up an administrator account manually.
+
+Whether the account is created in automated manner or not, you will then need
+to use that administrator account to further configure Lemur per the
+"Administration setup" section of the README in the Lemur code repo:
+
+https://gitlab.hax0rbana.org/public-repos/ucimc/b2p-lemur
+
+# Variables
+
+See defaults/main.yml for the variables and an explanation as to what they do.
+
 # Examples
 ## Playbook
 Here's an example of a playbook to install Lemur on the local machine. It does
@@ -19,6 +32,8 @@ not require you have SSH running.
 - hosts: localhost
   connection: local
   become: true
+  vars:
+    lemur_database_password: jCHbxF2znUYZ7MMB
   roles:
     - role: hax0rbana_adam.lemur
 ```
@@ -28,6 +43,8 @@ To maek a playbook to run this role on a remote host:
 ```yaml
 - hosts: all
   remote_user: root
+  vars:
+    lemur_database_password: jCHbxF2znUYZ7MMB
   roles:
     - role: hax0rbana_adam.lemur
 ```

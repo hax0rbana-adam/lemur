@@ -1,5 +1,11 @@
+# Note: currently only mysql/mariadb is implemented in this playbook
+lemur_database_software: mysql
 lemur_database_name: lemur
 lemur_database_user: username
 lemur_database_password: password
-# Note: currently only mysql/mariadb is implemented in this playbook
-lemur_database_software: mysql
+
+# If an administrator's username, email address and password are all entered,
+# their account will be automatically created.
+#lemur_admin_user: admin
+#lemur_admin_email: admin@example.com
+#lemur_admin_password: Password
