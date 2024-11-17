@@ -35,7 +35,7 @@ not require you have SSH running.
   vars:
     lemur_database_password: jCHbxF2znUYZ7MMB
   roles:
-    - role: hax0rbana_adam.lemur
+    - role: hax0rbana-adam.lemur
 ```
 
 To maek a playbook to run this role on a remote host:
@@ -46,7 +46,7 @@ To maek a playbook to run this role on a remote host:
   vars:
     lemur_database_password: jCHbxF2znUYZ7MMB
   roles:
-    - role: hax0rbana_adam.lemur
+    - role: hax0rbana-adam.lemur
 ```
 
 # Official repo location
