@@ -71,7 +71,7 @@
     name: "{{lemur_database_user}}"
     password: "{{lemur_database_password}}"
     priv: "lemur.*:ALL"
-    column_case_sensitive: true
+    #column_case_sensitive: true  # not compatible with community.mysql before 3.8.0
 
 - name: Create a random password to use as the SECRET_KEY value
   ansible.builtin.set_fact:
