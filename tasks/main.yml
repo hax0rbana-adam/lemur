@@ -122,5 +122,7 @@
 - name: Setting up administrator account, if the information was provided
   ansible.builtin.shell:
     chdir: "/var/www/btp-lemur"
-    cmd: '". bin/activate && DJANGO_SUPERUSER_PASSWORD="{{lemur_admin_password}}" python3 manage.py createsuperuser --username={{lemur_admin_password}} --email={{lemur_admin_email}} --noinput"'
+    cmd: |
+      . bin/activate
+      DJANGO_SUPERUSER_PASSWORD="{{lemur_admin_password}}" python3 manage.py createsuperuser --username={{lemur_admin_password}} --email={{lemur_admin_email}} --noinput
   when: lemur_admin_user is defined and lemur_admin_email is defined and lemur_admin_password is defined
