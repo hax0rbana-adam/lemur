@@ -73,15 +73,24 @@
     priv: "lemur.*:ALL"
     #column_case_sensitive: true  # not compatible with community.mysql before 3.8.0
 
+- name: Checking to see if Lemur's secrets already exist
+  ansible.builtin.stat:
+    path: /var/www/btp-lemur/LemurAptana/settings_secret.py
+  register: secrets
+
 - name: Create a random password to use as the SECRET_KEY value
   ansible.builtin.set_fact:
     lemur_secret_key: "{{ lookup('ansible.builtin.password', '/dev/null', length=32) }}"
-  when: lemur_secret_key is not defined
+  # only generate a key if we don't have one from our ansible variables
+  # and we don't already have a file secrets file deployed
+  when: lemur_secret_key is not defined and not secrets.stat.exists
 
 - name: Configuring Lemur's secrets
   ansible.builtin.template:
     src: templates/settings_secret.py.j2
     dest: /var/www/btp-lemur/LemurAptana/settings_secret.py
+  # Don't overwrite existing secrets (as that may change the SECRET_KEY)
+  when: not secrets.stat.exists
 
 - name: Configuring Lemur's acceptable hostnames
   ansible.builtin.lineinfile:
@@ -126,3 +135,9 @@
       . bin/activate
       DJANGO_SUPERUSER_PASSWORD="{{lemur_admin_password}}" python3 manage.py createsuperuser --username={{lemur_admin_user}} --email={{lemur_admin_email}} --noinput
   when: lemur_admin_user is defined and lemur_admin_email is defined and lemur_admin_password is defined
+  register: adduser
+  # Short of creating a custom management command, we can't see if the user exists
+  # Ref: https://stackoverflow.com/a/39745576
+  # So we ignore failures here, as it will fail if the user exists and we want to be idempotent
+  # (manage.py has a return code of 1 when the user already exists)
+  failed_when: adduser.rc != 0 and adduser.rc != 1
