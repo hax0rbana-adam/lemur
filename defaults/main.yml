@@ -1,3 +1,5 @@
+lemur_allowable_hostname: '{{inventory_hostname}}'
+
 # Note: currently only mysql/mariadb is implemented in this playbook
 lemur_database_software: mysql
 lemur_database_name: lemur
