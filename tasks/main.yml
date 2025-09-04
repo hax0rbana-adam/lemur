@@ -1,5 +1,5 @@
 # This role is expected to run as root so it can install system-wide packages
-- name: Install dependencies that is available from apt repos
+- name: Install dependencies that are available from apt repos
   ansible.builtin.package:
     name:
       - git
