@@ -97,6 +97,8 @@
     path: /var/www/btp-lemur/LemurAptana/settings.py
     line: ALLOWED_HOSTS = ['{{lemur_allowable_hostname}}']
     regexp: 'ALLOWED_HOSTS.*'
+  notify:
+    - Enable and start uwsgi-lemur
 
 - name: Setting up tables in the database
   ansible.builtin.shell:
