@@ -116,6 +116,9 @@
   ansible.builtin.shell:
     chdir: "/var/www/btp-lemur"
     cmd: ". bin/activate && python3 manage.py migrate"
+  # we only want to run the migrate script if explictly asked to do so
+  # which should only happen on the initial deployment
+  when: lemur_migrate is defined
   changed_when: true
 
 - name: Collecting all the static files that will be served
