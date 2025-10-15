@@ -1,5 +1,8 @@
 lemur_allowable_hostnames:
-  - '{{inventory_hostname}}'
+  - '{{ inventory_hostname }}'
+
+lemur_git_url: https://github.com/hax0rbana-adam/btp-lemur.git
+lemur_git_commit_hash: 500da1c170f809f65ce2619586d66f15025ad792
 
 # Note: currently only mysql/mariadb is implemented in this playbook
 lemur_database_software: mysql
@@ -9,6 +12,6 @@ lemur_database_password: password
 
 # If an administrator's username, email address and password are all entered,
 # their account will be automatically created.
-#lemur_admin_user: admin
-#lemur_admin_email: admin@example.com
-#lemur_admin_password: Password
+# lemur_admin_user: admin
+# lemur_admin_email: admin@example.com
+# lemur_admin_password: Password

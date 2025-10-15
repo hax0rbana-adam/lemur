@@ -1,10 +1,10 @@
 - name: Reload nginx
-  service:
+  ansible.builtin.service:
     name: nginx
     state: reloaded
 
 - name: Enable and start uwsgi-lemur
-  service:
+  ansible.builtin.service:
     name: uwsgi-lemur
     enabled: true
     state: restarted

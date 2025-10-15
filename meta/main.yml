@@ -4,7 +4,7 @@ galaxy_info:
   description: lemur - tracking system for books to prisoners
   license: MIT
   company: none
-  min_ansible_version: 2.7
+  min_ansible_version: "2.7"
   platforms:
     - name: Debian
       versions:
@@ -12,6 +12,8 @@ galaxy_info:
   galaxy_tags:
     - b2p
     - books2prisoners
+  role_name: lemur
+  namespace: hax0rbana_adam
 
 # We actually do depend on the community.mysql collection, but dependencies
 # for a role can only handle depending on other roles. :eyeroll:
