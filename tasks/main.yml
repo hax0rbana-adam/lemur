@@ -107,7 +107,7 @@
 - name: Configuring Lemur's acceptable hostnames
   ansible.builtin.lineinfile:
     path: /var/www/btp-lemur/LemurAptana/settings.py
-    line: "ALLOWED_HOSTS = ['{{ lemur_allowable_hostnames | join(\"'\", \"'\") }}']"
+    line: ALLOWED_HOSTS = ['{{ lemur_allowable_hostnames | join("', '") }}']
     regexp: 'ALLOWED_HOSTS.*'
   notify:
     - Enable and start uwsgi-lemur
