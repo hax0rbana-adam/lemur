@@ -45,8 +45,6 @@
     chdir: "/var/www/btp-lemur"
     cmd: npm install --global yarn
   changed_when: true
-  become: true
-  become_user: www-data
 
 - name: Getting yarn packages and dependencies
   ansible.builtin.command:
