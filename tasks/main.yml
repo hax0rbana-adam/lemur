@@ -140,12 +140,6 @@
   become: true
   become_user: www-data
 
-- name: Setting ownership of btp-lemur directory
-  ansible.builtin.file:
-    path: "/var/www/btp-lemur"
-    owner: "www-data"
-    group: "www-data"
-
 - name: Configuring Nginx
   ansible.builtin.template:
     src: templates/nginx_default.j2
