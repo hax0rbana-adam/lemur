@@ -1,8 +1,8 @@
 lemur_allowable_hostnames:
   - '{{ inventory_hostname }}'
 
-lemur_git_url: https://github.com/hax0rbana-adam/btp-lemur.git
-lemur_git_commit_hash: 500da1c170f809f65ce2619586d66f15025ad792
+lemur_git_url: https://gitlab.hax0rbana.org/public-repos/ucimc/b2p-lemur.git
+lemur_git_commit_hash: 999beb160808355c2c04c569b76bbc1f80eaa85e
 
 # Note: currently only mysql/mariadb is implemented in this playbook
 lemur_database_software: mysql
