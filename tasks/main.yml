@@ -22,6 +22,13 @@
     path: /var/www/btp-lemur
   register: lemur_repo
 
+- name: Setting ownership of web directory
+  ansible.builtin.file:
+    path: "/var/www"
+    owner: "www-data"
+    group: "www-data"
+    mode: "775"
+
 - name: Making sure we have the latest version of the Lemur code
   ansible.builtin.git:
     # clone the repo if it doesn't exist, otherwise update the existing repo
