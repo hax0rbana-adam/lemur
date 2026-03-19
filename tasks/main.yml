@@ -22,14 +22,6 @@
     path: /var/www/btp-lemur
   register: lemur_repo
 
-- name: Accepting different permissions on the existing btp-lemur checkout
-  ansible.builtin.command:
-    cmd: git config --global --add safe.directory '/var/www/btp-lemur'
-  when: lemur_repo.stat.exists
-  changed_when: true
-  tags:
-    - skip_ansible_lint  # we can't use the git module for this
-
 - name: Making sure we have the latest version of the Lemur code
   ansible.builtin.git:
     # clone the repo if it doesn't exist, otherwise update the existing repo
@@ -38,36 +30,48 @@
     force: true
     repo: '{{ lemur_git_url }}'
     version: '{{ lemur_git_commit_hash }}'
+  become: true
+  become_user: www-data
 
 - name: Installing yarn via npm
   ansible.builtin.command:
     chdir: "/var/www/btp-lemur"
     cmd: npm install --global yarn
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Getting yarn packages and dependencies
   ansible.builtin.command:
     chdir: "/var/www/btp-lemur"
     cmd: yarn
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Using yarn to install webpack
   ansible.builtin.command:
     chdir: "/var/www/btp-lemur"
     cmd: yarn global add webpack
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Running webpack in the lemur repo
   ansible.builtin.command:
     chdir: "/var/www/btp-lemur"
     cmd: ./node_modules/webpack/bin/webpack.js
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Set up the Python virtual environment
   ansible.builtin.shell:
     chdir: "/var/www/btp-lemur"
     cmd: "python3 -m venv . && . bin/activate && pip install -r requirements.txt"
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Creating the database for Lemur
   community.mysql.mysql_db:
@@ -120,12 +124,16 @@
   # which should only happen on the initial deployment
   when: lemur_migrate is defined
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Collecting all the static files that will be served
   ansible.builtin.shell:
     chdir: "/var/www/btp-lemur"
     cmd: ". bin/activate && python3 manage.py collectstatic --no-input"
   changed_when: true
+  become: true
+  become_user: www-data
 
 - name: Setting ownership of btp-lemur directory
   ansible.builtin.file:
