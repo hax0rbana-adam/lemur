@@ -10,6 +10,9 @@ lemur_database_name: lemur
 lemur_database_user: username
 lemur_database_password: password
 
+lemur_service_user: www-data
+lemur_service_group: www-data
+
 # If an administrator's username, email address and password are all entered,
 # their account will be automatically created.
 # lemur_admin_user: admin

@@ -4,8 +4,8 @@ Description=Lemur uwsgi service
 [Service]
 ExecStart=/usr/bin/uwsgi_python3 --ini /var/www/btp-lemur/uwsgi.ini
 RuntimeDirectory=uwsgi
-User=www-data
-Group=www-data
+User={{ lemur_service_user }}
+Group={{ lemur_service_group }}
 Restart=always
 KillSignal=SIGQUIT
 Type=notify
