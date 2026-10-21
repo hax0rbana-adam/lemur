@@ -8,3 +8,8 @@
     name: uwsgi-lemur
     enabled: true
     state: restarted
+
+- name: Daemon-reload uwsgi-lemur
+  ansible.builtin.service:
+    name: uwsgi-lemur
+    daemon_reload: true

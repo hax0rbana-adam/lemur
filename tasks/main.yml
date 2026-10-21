@@ -158,6 +158,7 @@
     group: root
     mode: '644'
   notify:
+    - Daemon-reload uwsgi-lemur
     - Enable and start uwsgi-lemur
 
 - name: Setting up administrator account, if the information was provided
